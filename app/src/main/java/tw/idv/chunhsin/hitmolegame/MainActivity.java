@@ -18,17 +18,19 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     Button button;
-    TextView textView;
+    TextView textView,textView2;
     SoundPool soundPool;
     int soundId1,soundId2,soundId3;
     boolean active=false;
-    ImageView imageView,imageView2,imageView3;
+    ImageView imageView,imageView2,imageView3,imageView4,imageView5,imageView6,imageView7,imageView8,imageView9;
+    ImageView[] images;
     int[] moles = {
             R.drawable.hole,
             R.drawable.mole1,
             R.drawable.mole2,
             R.drawable.mole3,
     };
+    int score;
     //int moleIdx,moleIdx2;
     Handler handler;
     @Override
@@ -65,7 +67,16 @@ public class MainActivity extends AppCompatActivity {
         imageView=(ImageView)findViewById(R.id.imageView);
         imageView2=(ImageView)findViewById(R.id.imageView2);
         imageView3=(ImageView)findViewById(R.id.imageView3);
+        imageView4=(ImageView)findViewById(R.id.imageView4);
+        imageView5=(ImageView)findViewById(R.id.imageView5);
+        imageView6=(ImageView)findViewById(R.id.imageView6);
+        imageView7=(ImageView)findViewById(R.id.imageView7);
+        imageView8=(ImageView)findViewById(R.id.imageView8);
+        imageView9=(ImageView)findViewById(R.id.imageView9);
+        ImageView[] ivs = {imageView,imageView2,imageView3,imageView4,imageView5,imageView6,imageView7,imageView8,imageView9};
+        images = ivs;
         textView=(TextView)findViewById(R.id.textView);
+        textView2=(TextView)findViewById(R.id.textView2);
     }
 
     @Override
@@ -95,20 +106,29 @@ public class MainActivity extends AppCompatActivity {
         ImageView image;
         int moleIdx,delay;
 
+        View.OnClickListener moleClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (moleIdx == 0 || moleIdx == 1) {
+                    soundPool.play(soundId1, 1.0f, 1.0f, 0, 0, 1.0f);
+                } else if (moleIdx == 2 || moleIdx == 3) {
+                    soundPool.play(soundId2, 1.0f, 1.0f, 0, 0, 1.0f);
+                    image.setImageResource(R.drawable.mole4);
+                    moleIdx = moles.length;
+                    score+=100;
+                    textView2.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            textView2.setText(String.valueOf(score));
+                        }
+                    });
+                }
+            }
+        };
+
         public Moles(ImageView imageView) {
             image = imageView;
-            image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (moleIdx == 0 || moleIdx == 1) {
-                        soundPool.play(soundId1, 1.0f, 1.0f, 0, 0, 1.0f);
-                    } else if (moleIdx == 2 || moleIdx == 3) {
-                        soundPool.play(soundId2, 1.0f, 1.0f, 0, 0, 1.0f);
-                        image.setImageResource(R.drawable.mole4);
-                        moleIdx = moles.length;
-                    }
-                }
-            });
+            image.setOnClickListener(moleClick);
         }
 
         @Override
@@ -117,16 +137,25 @@ public class MainActivity extends AppCompatActivity {
                 moleIdx++;
                 if(moleIdx>=moles.length){
                     moleIdx=0;
+                    image.setImageResource(moles[moleIdx]);
+                    int viewId = getRandViewId();
+                    image = images[viewId];
+                    image.setOnClickListener(moleClick);
+                    delay = getRandom();
+                    image.postDelayed(this,delay);
+                }else{
+                    image.setImageResource(moles[moleIdx]);
+                    delay = getRandom();
+                    image.postDelayed(this,delay);
                 }
-                image.setImageResource(moles[moleIdx]);
-                delay = getRandom();
-                image.postDelayed(this,delay);
             }
         }
 
         public int getRandom(){
-            return 200+((int)(Math.random()*5)+1)*100;
+            return 200+((int)(Math.random()*10)+1)*100;
         }
+
+        public int getRandViewId() { return (int)(Math.random()*9); }
     }
 
 
